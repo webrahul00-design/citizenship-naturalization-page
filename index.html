@@ -424,4 +424,30 @@
     </div>
   </footer>
 </body>
+  <script>
+document.querySelector('form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  var f = e.target;
+  var b = f.querySelector('button[type=submit]');
+  var label = b.textContent;
+  var data = Object.fromEntries(new FormData(f).entries());
+  data.page = data.practice_area || document.title;
+  b.disabled = true;
+  b.textContent = 'Sending...';
+  try {
+    var r = await fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    var d = await r.json();
+    if (d.ok) { window.location.href = '/thank-you'; }
+    else { throw new Error('failed'); }
+  } catch (err) {
+    b.disabled = false;
+    b.textContent = label;
+    alert('Something went wrong. Please call (949) 883-6001.');
+  }
+});
+</script>
 </html>
